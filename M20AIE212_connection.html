@@ -1,0 +1,38 @@
+<?php
+$username = "amresh";
+$password = "ubuntu";
+$connection = null;
+try{
+$connection = new PDO("mysql:host=10.0.3.15;dbname=testdatabase", $username, $password);
+$connection->exec("set names utf8");
+}catch(PDOException $exception){
+echo "Connection error: " . $exception->getMessage();
+}
+
+function saveData($name, $password){
+global $connection;
+$query = "INSERT INTO test(name, password) VALUES( :name,:password)";
+
+$callToDb = $connection->prepare( $query );
+$name=htmlspecialchars(strip_tags($name));
+$password=htmlspecialchars(strip_tags($password));
+$callToDb->bindParam(":name",$name);
+$callToDb->bindParam(":password",$password);
+
+if($callToDb->execute()){
+return '<h3 style="text-align:center;">Details Saved !!</h3>';
+}
+}
+
+if( isset($_POST['submit'])){
+$name = htmlentities($_POST['name']);
+$password = htmlentities($_POST['password']);
+
+//then you can use them in a PHP function.
+$result = saveData($name, $password);
+echo $result;
+}
+else{
+echo '<h3 style="text-align:center;">Invalid Input.</h3>                                                                             ';
+}
+?>
